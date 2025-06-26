@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://unpkg.com/intl-tel-input@17/build/css/intlTelInput.css" rel="stylesheet">
+  <style>
+
+    body{
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    margin-top: 8rem;
+    background-color: #d4c5bb;
+    }
+   .form-container {
+      background-color: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 100%;
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    input[type="text"], input[type="tel"] {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-top: 5px;
+    }
+
+    .radio-group {
+      margin: 15px 0;
+    }
+
+    .radio-group label {
+      font-weight: normal;
+      display: block;
+    }
+
+    .note {
+      font-size: 12px;
+      color: gray;
+      margin-top: 3px;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 20px;
+      background-color: #d4c5bb;
+      color: #333;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #c3b3a6;
+    }
+
+    .success-message {
+      display: none;
+      text-align: center;
+      color: green;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    </style>
+</head>
+<body>
+    
+  <form class="form-container" id="rsvp-form">
+    <h2>ԽԽնդրում ենք հաստատել Ձեր<br><strong>ներկայությունը մինչև սեպտեմբերի 15-ը։</strong>.</h2>
+
+    <label>Կկարողանա՞ք ներկա գտնվել միջոցառմանը</label>
+    <div class="radio-group">
+      <label><input type="radio" name="attendance" value="Yes" required> Այո, մեծ հաճույքով</label>
+      <label><input type="radio" name="attendance" value="No"> Ցավոք, ոչ</label>
+    </div>
+
+    <label>Նշեք Ձեր և մասնակից անձանց անուն/ազգանունը</label>
+    <input type="text" name="guests" placeholder="Հյուրի անունը" required>
+
+    <label>Գրեք Ձեր հեռախոսահամարը</label>
+    <input type="tel" id="phone" name="phone" required>
+
+    <label>Ու՞մ կողմից եք հրավիրված</label>
+<div class="radio-group">
+      <label><input type="radio" name="invited_by" value="Yes" required> Հարութ</label>
+      <label><input type="radio" name="invited_by" value="No"> Էվելինա</label>
+    </div>
+    <!-- <label>Best wishes to the couple</label>
+    <input type="text" name="wishes" placeholder="Your wishes">
+    <div class="note">By the way, the best one will get a gift.</div> -->
+
+    <button type="submit">ՈՒՂԱՐԿԵԼ</button>
+    <div class="success-message" id="success">Thank you! Your RSVP has been sent.</div>
+  </form>
+   <script src="https://unpkg.com/intl-tel-input@17/build/js/intlTelInput.min.js"></script>
+
+   <script>
+    // rsvp
+ const phoneInputField = document.querySelector("#phone");
+  const iti = window.intlTelInput(phoneInputField, {
+    initialCountry: "am",
+    onlyCountries: ["am"],
+    nationalMode: false,
+    utilsScript: "https://unpkg.com/intl-tel-input@17/build/js/utils.js"
+  });
+    // 
+    // rsvp
+    const form = document.getElementById("rsvp-form");
+    const successMessage = document.getElementById("success");
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const formData = {
+        attendance: form.attendance.value,
+        guests: form.guests.value,
+        phone: iti.getNumber(), // полный международный номер
+        invited_by: form.invited_by.value,
+        // wishes: form.wishes.value
+      };
+
+fetch("https://script.google.com/macros/s/AKfycby_iQD2QJvHTRrPiAOhinVRWeOveHZmoXNiN1cvHQKw1xU24C63Mjef1q-aNJu97o1y9A/exec", {
+  method: "POST",
+  body: JSON.stringify(formData),
+  headers: {
+    "Content-Type": "application/json"
+  }
+})
+
+      .then(response => {
+        if (response.ok) {
+          form.reset();
+          successMessage.style.display = "block";
+        } else {
+          alert("Something went wrong. Please try again.");
+        }
+      })
+      .catch(error => {
+        alert("Error: " + error.message);
+      });
+    }); </script>
+</body>
+</html>
